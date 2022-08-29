@@ -12,14 +12,14 @@ import (
 	"crypto/x509"
 	"errors"
 	"fmt"
+	"github.com/fvbock/endless"
+	"github.com/luraproject/lura/v2/config"
+	"github.com/luraproject/lura/v2/core"
 	"io/ioutil"
 	"net"
 	"net/http"
 	"sync"
 	"time"
-
-	"github.com/luraproject/lura/v2/config"
-	"github.com/luraproject/lura/v2/core"
 )
 
 // ToHTTPError translates an error into a HTTP status code
@@ -83,7 +83,7 @@ func InitHTTPDefaultTransport(cfg config.ServiceConfig) {
 // It configures the TLS layer if required by the received configuration.
 func RunServer(ctx context.Context, cfg config.ServiceConfig, handler http.Handler) error {
 	done := make(chan error)
-	s := NewServer(cfg, handler)
+	s := endless.NewServer(fmt.Sprintf(":%d", cfg.Port), handler)
 
 	if s.TLSConfig == nil {
 		go func() {
